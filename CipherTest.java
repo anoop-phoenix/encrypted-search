@@ -12,18 +12,14 @@ class CipherTest {
   public static void main(String[] args) {
     byte[] input = "This is a test. Under 32.".getBytes();
 
-    byte[] padded = nullPad(input);
-
-    byte[] encrypted = encryptTest(padded);
+    byte[] encrypted = encryptTest(input);
     byte[] decrypted = decryptTest(encrypted);
 
-    byte[] unpadded = unPad(decrypted);
-
-    if(Arrays.equals(input,unpadded)) {
+    if(Arrays.equals(input,decrypted)) {
       System.out.println("Success!");
     }
     else {
-      System.out.println(new String(unpadded));
+      System.out.println(new String(decrypted));
     }
   }
 
@@ -70,10 +66,12 @@ class CipherTest {
 
     byte[] out = new byte[32];
 
+    byte[] padded = nullPad(in);
+
     // we need it to be deterministic, so use default 0 IV
     cipher.init(true, new KeyParameter(key));
-    cipher.processBlock(in, 0, out, 0);
-    cipher.processBlock(in, 16, out, 16);
+    cipher.processBlock(padded, 0, out, 0);
+    cipher.processBlock(padded, 16, out, 16);
 
     return out;
   }
@@ -88,6 +86,8 @@ class CipherTest {
     cipher.processBlock(in, 0, out, 0);
     cipher.processBlock(in, 16, out, 16);
 
-    return out;
+    byte[] unpadded = unPad(out);
+
+    return unpadded;
   }
 }
