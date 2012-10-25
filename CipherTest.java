@@ -3,7 +3,6 @@ import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.crypto.params.KeyParameter;
 import java.util.Arrays;
-import java.security.SecureRandom;
 
 class CipherTest {
   static byte[] key = "abcdefhijklmnopq".getBytes();
