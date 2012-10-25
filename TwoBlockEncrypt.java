@@ -3,7 +3,21 @@ import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.crypto.params.KeyParameter;
 import java.util.Arrays;
-
+/*
+ * TwoBlockEncrypt
+ *
+ *   encrypt(in, key)
+ * This takes an input byte array of length <= 32,
+ * and a key of length 16.
+ * Input is null-padded to 32 bytes and encrypted deterministically.
+ * Thus, output is 32 bytes.
+ *
+ *   decrypt(in, key)
+ * This reverses the above.
+ * If the plaintext ended with a null it will be trimmed. Not bothering with
+ * fancier padding because we don't expect to have non-English inputs.
+ *
+ */
 public class TwoBlockEncrypt {
 
   static byte[] nullPad(byte[] in) throws RuntimeException {
