@@ -4,7 +4,6 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.crypto.params.KeyParameter;
 import java.util.Arrays;
 import java.security.SecureRandom;
-import org.bouncycastle.util.encoders.Hex;
 
 class CipherTest {
   static byte[] key = "abcdefhijklmnopq".getBytes();
