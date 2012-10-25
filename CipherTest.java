@@ -9,21 +9,21 @@ import org.bouncycastle.util.encoders.Hex;
 class CipherTest {
   static byte[] key = "abcdefhijklmnopq".getBytes();
 
-  // Code is currently specific for 2 AES blocks, or 32 bytes.
-  // Input should be padded to this length.
   public static void main(String[] args) {
-    byte[] input = "This is a test. Exactly 32 bytes".getBytes();
-    byte[] encrypted;
-    byte[] decrypted;
+    byte[] input = "This is a test. Under 32.".getBytes();
 
-    encrypted = encryptTest(input);
-    decrypted = decryptTest(encrypted);
+    byte[] padded = nullPad(input);
 
-    if(Arrays.equals(input,decrypted)) {
+    byte[] encrypted = encryptTest(padded);
+    byte[] decrypted = decryptTest(encrypted);
+
+    byte[] unpadded = unPad(decrypted);
+
+    if(Arrays.equals(input,unpadded)) {
       System.out.println("Success!");
     }
     else {
-      System.out.println(new String(decrypted));
+      System.out.println(new String(unpadded));
     }
   }
 
