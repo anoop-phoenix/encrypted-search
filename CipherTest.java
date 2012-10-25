@@ -36,27 +36,31 @@ class CipherTest {
     return out;
   }
 
-  static byte[] nullPad(byte[] in) {
+  static byte[] nullPad(byte[] in) throws RuntimeException {
     if(32 < in.length) {
-      throw new Exception("we don't support length > 32");
+      throw new RuntimeException("we don't support length > 32");
     }
 
-    return copyOf(in, 32);
+    return Arrays.copyOf(in, 32);
   }
 
   static byte[] unPad(byte[] in) {
     // assumes input has no null bytes
     int i = findIndex(in, (byte) 0);
+    if(i == -1) {
+      return in;
+    }
 
-    return copyOf(in, i);
+    return Arrays.copyOf(in, i);
   }
 
   static int findIndex(byte[] array, byte elt) {
-    for(int i = 0; i < in.length; i++) {
-      if(in[i] == elt) {
+    for(int i = 0; i < array.length; i++) {
+      if(array[i] == elt) {
         return i;
       }
     }
+    return -1;
   }
 
 
