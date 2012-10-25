@@ -3,6 +3,15 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import java.util.Arrays;
 
+/*
+ * StreamChunker
+ *
+ * Initialize with a key (16 bytes)
+ * and an IV (8 bytes).
+ *
+ * Call getChunk() repeatedly to fetch 12-byte chunks of data for our stream.
+ *
+ */
 public class StreamChunker {
   private Salsa20Engine engine;
   private static final int blockSize = 12;
