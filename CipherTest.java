@@ -9,6 +9,8 @@ import org.bouncycastle.util.encoders.Hex;
 class CipherTest {
   static byte[] key = "abcdefhijklmnopq".getBytes();
 
+  // Code is currently specific for 2 AES blocks, or 32 bytes.
+  // Input should be padded to this length.
   public static void main(String[] args) {
     byte[] input = "This is a test. Exactly 32 bytes".getBytes();
     byte[] encrypted;
