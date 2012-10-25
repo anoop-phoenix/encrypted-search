@@ -36,6 +36,29 @@ class CipherTest {
     return out;
   }
 
+  static byte[] nullPad(byte[] in) {
+    if(32 < in.length) {
+      throw new Exception("we don't support length > 32");
+    }
+
+    return copyOf(in, 32);
+  }
+
+  static byte[] unPad(byte[] in) {
+    // assumes input has no null bytes
+    int i = findIndex(in, (byte) 0);
+
+    return copyOf(in, i);
+  }
+
+  static int findIndex(byte[] array, byte elt) {
+    for(int i = 0; i < in.length; i++) {
+      if(in[i] == elt) {
+        return i;
+      }
+    }
+  }
+
 
   static byte[] encryptTest(byte[] in) {
   // use this, or Buffered / Padded cipher?
