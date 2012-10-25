@@ -10,7 +10,7 @@ class CipherTest {
   static byte[] key = "abcdefhijklmnopq".getBytes();
 
   public static void main(String[] args) {
-    byte[] input = "This is a test.@".getBytes();
+    byte[] input = "This is a test. Exactly 32 bytes".getBytes();
     byte[] encrypted;
     byte[] decrypted;
 
@@ -25,6 +25,7 @@ class CipherTest {
     }
   }
 
+  // not needed anymore
   static byte[] concat(byte[] left, byte[] right) {
     byte[] out = new byte[left.length + right.length];
     System.arraycopy(left, 0, out, 0, left.length);
@@ -38,27 +39,25 @@ class CipherTest {
   // use this, or Buffered / Padded cipher?
     CBCBlockCipher cipher = new CBCBlockCipher(new AESEngine());
 
-    // get a random IV
-    SecureRandom random = new SecureRandom();
-    byte[] IV = new byte[16];
-    random.nextBytes(IV);
-    byte[] ciphertext = new byte[16];
+    byte[] out = new byte[32];
 
-    cipher.init(true, new ParametersWithIV(new KeyParameter(key), IV));
-    cipher.processBlock(in, 0, ciphertext, 0);
+    // we need it to be deterministic, so use default 0 IV
+    cipher.init(true, new KeyParameter(key));
+    cipher.processBlock(in, 0, out, 0);
+    cipher.processBlock(in, 16, out, 16);
 
-    return concat(IV, ciphertext);
+    return out;
   }
 
 
   static byte[] decryptTest(byte[] in) {
     CBCBlockCipher cipher = new CBCBlockCipher(new AESEngine());
 
-    byte[] IV = Arrays.copyOfRange(in, 0, 16);
-    byte[] out = new byte[16];
+    byte[] out = new byte[32];
 
-    cipher.init(false, new ParametersWithIV(new KeyParameter(key), IV));
-    cipher.processBlock(in, 16, out, 0);
+    cipher.init(false, new KeyParameter(key));
+    cipher.processBlock(in, 0, out, 0);
+    cipher.processBlock(in, 16, out, 16);
 
     return out;
   }
