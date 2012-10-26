@@ -1,8 +1,9 @@
 
 public class Enc {
 	// n is the block size, m is R's size
+	// These should probably be project-global somewhere
 	public static int n = 32;
-	public static int m = 16;
+	public static int m = 20;
 
 	public static byte[][] toBlocks(String plaintext)
 	{
