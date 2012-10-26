@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 public class Enc {
 	// n is the block size, m is R's size
