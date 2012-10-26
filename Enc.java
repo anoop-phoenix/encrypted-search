@@ -25,14 +25,14 @@ public class Enc {
 		return wordArray;
 	}
 	
-	public static byte[] preEnc(byte[][] wordArray, int blockIndex, long key2)
+	public static byte[] preEnc(byte[][] wordArray, int blockIndex, byte[] key2)
 	{	
 		byte[] word = wordArray[blockIndex];
 		//encrypt Word with E(key2)
-		return null;
+		return TwoBlockEncrypt(word, key2);
 	}
 	
-	public static byte[] getPubkey(byte[] X, long key1)
+	public static byte[] getPubkey(byte[] X, byte[] key1)
 	{
 		// pass first n-m bytes of X to L
 		byte[] L = new byte[n-m];
@@ -40,7 +40,8 @@ public class Enc {
 			L[i] = X[i];
 		}
 		//generate public key using f and key1, k = fkey1(L);
-		return null;
+		byte[] ki = PRF.PRF(L, key1);
+		return ki;
 	}
 	
 	public static byte[][] streamCipher(){
