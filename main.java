@@ -10,8 +10,9 @@ public class main {
 		// TODO Auto-generated method stub
 		String plaintext;
 		plaintext = "crypto";
-		long key1 = 10000;
-		long key2 = 10001;
+                // TODO generate randomly, get from config, etc
+		byte[] key1 = "this can be any size we want".getBytes();
+		byte[] key2 = "16 chars exactly".getBytes();
 		//Encryption
 		Enc enc = new Enc();
 		byte[][] wordArray = enc.toBlocks(plaintext);
