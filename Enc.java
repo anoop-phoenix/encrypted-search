@@ -7,19 +7,22 @@ public class Enc {
 
 	public static byte[][] toBlocks(String plaintext)
 	{
-		int remainder = plaintext.length()%n;
-		// right pad the string with space
-		if (remainder != 0) {
-			String pad = String.format("%1$-"+ remainder +"s","");
-			plaintext = plaintext + pad;
-		}
+		String[] strArray = plaintext.split("\\s+");
+		int remainder;
+
 		// find total number of blocks
-		int blockNum = plaintext.length()/n;
+		int blockNum = strArray.length;
+		
 		// convert string to byte array
-		String[] strArray = new String[blockNum];
 		byte[][] wordArray = new byte[blockNum][n];
 		for (int i = 0; i < blockNum; i++){
-			strArray[i] = plaintext.substring(i*n,(i+1)*n);
+			remainder = n - strArray[i].length();
+			// right pad the string with space
+			if (remainder > 0) {
+				String pad = String.format("%1$-"+ remainder +"s","");
+				strArray[i] = strArray[i] + pad;
+			}
+
 			wordArray[i] = strArray[i].getBytes();
 			//System.out.println(byteArray[i]);
 		}
