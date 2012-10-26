@@ -10,7 +10,7 @@ public class main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		String plaintext;
-		plaintext = "crypto";
+		plaintext = "crypto is fun. but it's hard.";
 		// TODO generate randomly, get from config, etc
 		byte[] key1 = "this can be any size we want".getBytes();
 		byte[] key2 = "16 chars exactly".getBytes();
@@ -20,6 +20,7 @@ public class main {
 		StreamChunker stream = new StreamChunker(streamKey);
 
 		byte[][] wordArray = enc.toBlocks(plaintext);
+		printByteArrayArray(wordArray);
 		byte[][] cipherText = new byte[wordArray.length][];
 		for (int i = 0; i < wordArray.length ;i++){
 			byte[] Xi = enc.preEnc(wordArray, i,key2);
@@ -31,7 +32,7 @@ public class main {
 			// send Ci to server
 			cipherText[i] = Ci;
 		}
-		System.out.println(new String(cipherText[0]));
+		printByteArrayArray(cipherText);
 		// now let's try decrypting
 		// reset the stream
 		StreamChunker stream2 = new StreamChunker(streamKey);
@@ -50,11 +51,18 @@ public class main {
 			decrypted[i] = Wi;
 		}
 
-		System.out.println(new String(decrypted[0]));
+		printByteArrayArray(decrypted);
 
 
 		
 
 	}
+
+	static void printByteArrayArray(byte[][] input) {
+		for (int i = 0; i < input.length; i++) {
+			System.out.println(new String(input[i]));
+		}
+	}
+
 
 }
