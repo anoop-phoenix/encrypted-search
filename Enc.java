@@ -65,11 +65,11 @@ public class Enc {
 	public static byte[] getC(byte[]Xi, byte[]Ti){
 		byte[] Ci = new byte[n];
 		int k = 0;
-        while(k < Xi.length) {
+	while(k < Xi.length) {
 			Ci[k] = (byte) (Xi[k] ^Ti[k]);
 			k++;
 		}
-        return Ci;
+	return Ci;
 	}
 		
 }
