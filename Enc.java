@@ -45,14 +45,7 @@ public class Enc {
 		return ki;
 	}
 	
-	public static byte[][] streamCipher(){
-		//generate streamCipher S = S1, S2, ... , Sl
-		return null;
-	}
-	
-	public static byte[] getT(int blockIndex, byte[][] S, byte[] key){
-		byte[] Si = new byte[n-m];
-		Si = S[blockIndex];
+	public static byte[] getT(int blockIndex, byte[] Si, byte[] key){
 		byte[] FkeySi = PRF.PRF(Si, key);
 		byte[] Ti = new byte[n];
 		// Ti = <Si, Fkey(si)>
