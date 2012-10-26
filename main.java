@@ -53,6 +53,24 @@ public class main {
 
 		printByteArrayArray(decrypted);
 
+		// TODO refactor much
+		// make query
+		String query = "but";
+		byte[] queryBlock = enc.toBlocks(query)[0];
+		byte[] X = TwoBlockEncrypt.encrypt(queryBlock, key2);
+		byte[] K = enc.getPubkey(X, key1);
+
+		// do search
+		for (int i = 0; i < cipherText.length; i++) {
+			byte[] Ci = cipherText[i];
+			byte[] Ti = enc.xor(X, Ci);
+			byte[] Si = enc.getLeft(Ti);
+			byte[] hash = PRF.PRF(Si, K);
+			if (Arrays.equals(hash, enc.getRight(Ti))) {
+				System.out.println("match at " + i);
+			}
+		}
+
 
 		
 
