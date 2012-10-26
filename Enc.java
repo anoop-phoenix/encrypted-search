@@ -52,8 +52,7 @@ public class Enc {
 	public static byte[] getT(int blockIndex, byte[][] S, byte[] key){
 		byte[] Si = new byte[n-m];
 		Si = S[blockIndex];
-		byte[] FkeySi = new byte[m];
-		//compute Fkey(Si)
+		byte[] FkeySi = PRF.PRF(Si, key);
 		byte[] Ti = new byte[n];
 		// Ti = <Si, Fkey(si)>
 		System.arraycopy(Si, 0, Ti, 0, n-m);
