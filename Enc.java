@@ -57,10 +57,8 @@ public class Enc {
 	
 	public static byte[] getC(byte[]Xi, byte[]Ti){
 		byte[] Ci = new byte[n];
-		int k = 0;
-		while(k < Xi.length) {
+		for(int k = 0; k < Xi.length; k++) {
 			Ci[k] = (byte) (Xi[k] ^Ti[k]);
-			k++;
 		}
 		return Ci;
 	}
