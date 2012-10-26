@@ -24,7 +24,7 @@ public class main {
 			byte[] ki = enc.getPubkey(Xi, key1);
 			byte[] Si = stream.getChunk();
 			
-			byte[] Ti = enc.getT(i, Si, ki);
+			byte[] Ti = enc.getT(Si, ki);
 			byte[] Ci = enc.getC(Xi, Ti);
 			// send Ci to server
 		}

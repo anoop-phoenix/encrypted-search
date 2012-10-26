@@ -45,7 +45,7 @@ public class Enc {
 		return ki;
 	}
 	
-	public static byte[] getT(int blockIndex, byte[] Si, byte[] key){
+	public static byte[] getT(byte[] Si, byte[] key){
 		byte[] FkeySi = PRF.PRF(Si, key);
 		byte[] Ti = new byte[n];
 		// Ti = <Si, Fkey(si)>
