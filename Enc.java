@@ -58,8 +58,8 @@ public class Enc {
 		return Ti;
 	}
 	
-	public static byte[] getC(byte[]Xi, byte[]Ti){
-		byte[] Ci = new byte[n];
+	public static byte[] xor(byte[]Xi, byte[]Ti){
+		byte[] Ci = new byte[Xi.length];
 		for(int k = 0; k < Xi.length; k++) {
 			Ci[k] = (byte) (Xi[k] ^Ti[k]);
 		}
