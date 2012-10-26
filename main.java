@@ -19,12 +19,12 @@ public class main {
 		StreamChunker stream = new StreamChunker(streamKey);
 
 		byte[][] wordArray = enc.toBlocks(plaintext);
-		for (int i = 0; i < wordArray.length/n ;i++){
+		for (int i = 0; i < wordArray.length ;i++){
 			byte[] Xi = enc.preEnc(wordArray, i,key2);
 			byte[] ki = enc.getPubkey(Xi, key1);
 			byte[] Si = stream.getChunk();
 			
-			byte[] Ti = enc.getT(i, S, ki);
+			byte[] Ti = enc.getT(i, Si, ki);
 			byte[] Ci = enc.getC(Xi, Ti);
 			// send Ci to server
 		}
