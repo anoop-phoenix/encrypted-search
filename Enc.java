@@ -30,7 +30,7 @@ public class Enc {
 	{	
 		byte[] word = wordArray[blockIndex];
 		//encrypt Word with E(key2)
-		return TwoBlockEncrypt(word, key2);
+		return TwoBlockEncrypt.encrypt(word, key2);
 	}
 	
 	public static byte[] getPubkey(byte[] X, byte[] key1)
