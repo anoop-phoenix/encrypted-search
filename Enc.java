@@ -47,6 +47,14 @@ public class Enc {
 		byte[] ki = PRF.PRF(L, key1);
 		return ki;
 	}
+
+	public static byte[] getLeft(byte[] in) {
+		return Arrays.copyOfRange(in,0,n-m);
+	}
+
+	public static byte[] getRight(byte[] in) {
+		return Arrays.copyOfRange(in,n-m,n);
+	}
 	
 	public static byte[] getT(byte[] Si, byte[] key){
 		byte[] FkeySi = PRF.PRF(Si, key);
