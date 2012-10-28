@@ -33,7 +33,7 @@ public class main {
 		Query q2 = Query.fromBytes(msg);
 		int matchLocation = Enc.search(q2, cipherText);
 		if (matchLocation==-1){
-			System.out.println("There is no match")
+			System.out.println("There is no match");
 		}else{
 			System.out.println(matchLocation);
 		}

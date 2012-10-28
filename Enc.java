@@ -51,19 +51,11 @@ public class Enc {
 		return ki;
 	}
 
-<<<<<<< HEAD
 	static byte[] getLeft(byte[] in) {
 		return Arrays.copyOfRange(in,0,n-m);
 	}
 
 	static byte[] getRight(byte[] in) {
-=======
-	public static byte[] getLeft(byte[] in) {
-		return Arrays.copyOfRange(in,0,n-m);
-	}
-
-	public static byte[] getRight(byte[] in) {
->>>>>>> searching improved
 		return Arrays.copyOfRange(in,n-m,n);
 	}
 	
@@ -77,11 +69,7 @@ public class Enc {
 		return Ti;
 	}
 	
-<<<<<<< HEAD
 	static byte[] xor(byte[]Xi, byte[]Ti){
-=======
-	public static byte[] xor(byte[]Xi, byte[]Ti){
->>>>>>> searching improved
 		byte[] Ci = new byte[Xi.length];
 		for(int k = 0; k < Xi.length; k++) {
 			Ci[k] = (byte) (Xi[k] ^Ti[k]);
