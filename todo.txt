@@ -1,0 +1,10 @@
+incorporate Enc into client, server
+  stuff is not line-wise anymore - \n could appear in encrypted text
+
+deal with punctuation?
+
+key storage/generation in client
+
+package it up
+
+write docs/example case
