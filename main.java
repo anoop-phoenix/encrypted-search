@@ -24,7 +24,7 @@ public class main {
 
 		printByteArrayArray(decrypted);
 
-		String query = "but";
+		String query = "IT's";
 		Query q = Enc.makeQuery(query, key1, key2);
 
 		byte[] msg = q.getBytes();
@@ -32,8 +32,11 @@ public class main {
 		// do search
 		Query q2 = Query.fromBytes(msg);
 		int matchLocation = Enc.search(q2, cipherText);
-		System.out.println(matchLocation);
-
+		if (matchLocation==-1){
+			System.out.println("There is no match")
+		}else{
+			System.out.println(matchLocation);
+		}
 	}
 
 	static void printByteArrayArray(byte[][] input) {
