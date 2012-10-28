@@ -75,6 +75,7 @@ public class Enc {
 		return Ci;
 	}
 
+/* Encrypt a ciphertext for transmission to the server. */
 	public static byte[][] encrypt(String plaintext, byte[] streamKey, byte[] key1, byte[] key2) {
 		StreamChunker stream = new StreamChunker(streamKey);
 
@@ -92,6 +93,7 @@ public class Enc {
 		return cipherText;
 	}
 
+/* Decrypt a ciphertext. */
 	public static byte[][] decrypt(byte[][] cipherText, byte[] streamKey, byte[] key1, byte[] key2) {
 		StreamChunker stream = new StreamChunker(streamKey);
 		byte[][] decrypted = new byte[cipherText.length][];
@@ -110,6 +112,9 @@ public class Enc {
 		return decrypted;
 	}
 
+/* Construct a query object given a word and the two keys (stream key is not needed).
+ * This query can be passed on to the server to do the search.
+ */
 	public static Query makeQuery(String word, byte[] key1, byte[] key2) {
 		byte[] queryBlock = Enc.toBlocks(word)[0];
 		byte[] X = TwoBlockEncrypt.encrypt(queryBlock, key2);
@@ -118,6 +123,11 @@ public class Enc {
 		return new Query(X, K);
 	}
 
+/* Search for the first match of a query in a ciphertext.
+ * Returns the index of the first match, or -1 if not found.
+ *
+ * Do we want more results (list of offsets) or fewer (bool)?
+ */
 	public static int search(Query q, byte[][] cipherText) {
 		byte[] X = q.getWordBlock();
 		byte[] K = q.getKey();
