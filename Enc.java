@@ -74,5 +74,64 @@ public class Enc {
 		}
 		return Ci;
 	}
-		
+
+	public static byte[][] encrypt(String plaintext, byte[] streamKey, byte[] key1, byte[] key2) {
+		StreamChunker stream = new StreamChunker(streamKey);
+
+		byte[][] wordArray = Enc.toBlocks(plaintext);
+		byte[][] cipherText = new byte[wordArray.length][];
+		for (int i = 0; i < wordArray.length ;i++){
+			byte[] Xi = Enc.preEnc(wordArray, i,key2);
+			byte[] ki = Enc.getPubkey(Xi, key1);
+			byte[] Si = stream.getChunk();
+			
+			byte[] Ti = Enc.getT(Si, ki);
+			byte[] Ci = Enc.xor(Xi, Ti);
+			cipherText[i] = Ci;
+		}
+		return cipherText;
+	}
+
+	public static byte[][] decrypt(byte[][] cipherText, byte[] streamKey, byte[] key1, byte[] key2) {
+		StreamChunker stream = new StreamChunker(streamKey);
+		byte[][] decrypted = new byte[cipherText.length][];
+		for (int i = 0; i < cipherText.length; i++) {
+			byte[] Ci = cipherText[i];
+			byte[] Yi = Arrays.copyOfRange(Ci,0,n-m);
+			byte[] Si = stream.getChunk();
+			byte[] Li = Enc.xor(Si, Yi);
+			byte[] ki = Enc.getPubkey(Li, key1);
+			byte[] Ti = Enc.getT(Si, ki);
+			
+			byte[] Xi = Enc.xor(Ci, Ti);
+			byte[] Wi = TwoBlockEncrypt.decrypt(Xi, key2);
+			decrypted[i] = Wi;
+		}
+		return decrypted;
+	}
+
+	public static Query makeQuery(String word, byte[] key1, byte[] key2) {
+		byte[] queryBlock = Enc.toBlocks(word)[0];
+		byte[] X = TwoBlockEncrypt.encrypt(queryBlock, key2);
+		byte[] K = Enc.getPubkey(X, key1);
+
+		return new Query(X, K);
+	}
+
+	public static int search(Query q, byte[][] cipherText) {
+		byte[] X = q.getWordBlock();
+		byte[] K = q.getKey();
+
+		for (int i = 0; i < cipherText.length; i++) {
+			byte[] Ci = cipherText[i];
+			byte[] Ti = Enc.xor(X, Ci);
+			byte[] Si = Enc.getLeft(Ti);
+			byte[] hash = PRF.PRF(Si, K);
+			if (Arrays.equals(hash, Enc.getRight(Ti))) {
+				return i;
+			}
+		}
+
+		return (-1);
+	}
 }
