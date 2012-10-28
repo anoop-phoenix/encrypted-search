@@ -8,26 +8,19 @@ public class Enc {
 
 	static byte[][] toBlocks(String plaintext)
 	{
-		plaintext=plaintext.toLowerCase();
-		String[] strArray = plaintext.split("\\s+");
+		//Let's go for perfect decryption, rather than case-insensitive
+		//plaintext=plaintext.toLowerCase();
+		String[] strArray = plaintext.split("\\b");
 		int remainder;
 
 		// find total number of blocks
 		int blockNum = strArray.length;
 		
 		// convert string to byte array
-		byte[][] wordArray = new byte[blockNum][n];
+		byte[][] wordArray = new byte[blockNum][];
 		for (int i = 0; i < blockNum; i++){
-			strArray[i] = strArray[i].replaceAll("([a-z]+)[?:!.,;']*", "$1");
-			remainder = n - strArray[i].length();
-			// right pad the string with space
-			if (remainder > 0) {
-				String pad = String.format("%1$-"+ remainder +"s","");
-				strArray[i] = strArray[i] + pad;
-			}
-
 			wordArray[i] = strArray[i].getBytes();
-			//System.out.println(byteArray[i]);
+			//System.out.println(new String(wordArray[i]));
 		}
 		return wordArray;
 	}
@@ -118,7 +111,7 @@ public class Enc {
  * This query can be passed on to the server to do the search.
  */
 	public static Query makeQuery(String word, byte[] key1, byte[] key2) {
-		byte[] queryBlock = Enc.toBlocks(word)[0];
+		byte[] queryBlock = word.getBytes();
 		byte[] X = TwoBlockEncrypt.encrypt(queryBlock, key2);
 		byte[] K = Enc.getPubkey(X, key1);
 

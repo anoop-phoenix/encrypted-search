@@ -18,13 +18,27 @@ public class main {
 		//Encryption
 		byte[][] cipherText = Enc.encrypt(plaintext, streamKey, key1, key2);
 
-		printByteArrayArray(cipherText);
+		//printByteArrayArray(cipherText);
 		// now let's try decrypting
 		byte[][] decrypted = Enc.decrypt(cipherText, streamKey, key1, key2);
 
-		printByteArrayArray(decrypted);
+		//printByteArrayArray(decrypted);
+		String decString = "";
+		for(int i = 0; i < decrypted.length; i++) {
+			decString = decString.concat(new String(decrypted[i]));
+			// ideally use StringBuffer here instead
+		}
 
-		String query = "IT's";
+		if(plaintext.equals(decString)) {
+			System.out.println("perfect decryption");
+		}
+		else {
+			System.out.println("decrypted not identical");
+			System.out.println(plaintext);
+			System.out.println(decString);
+		}
+
+		String query = "hard";
 		Query q = Enc.makeQuery(query, key1, key2);
 
 		byte[] msg = q.getBytes();
