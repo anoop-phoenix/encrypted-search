@@ -27,8 +27,11 @@ public class main {
 		String query = "but";
 		Query q = Enc.makeQuery(query, key1, key2);
 
+		byte[] msg = q.getBytes();
+
 		// do search
-		int matchLocation = Enc.search(q, cipherText);
+		Query q2 = Query.fromBytes(msg);
+		int matchLocation = Enc.search(q2, cipherText);
 		System.out.println(matchLocation);
 
 	}
