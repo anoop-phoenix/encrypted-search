@@ -3,10 +3,10 @@ import java.util.Arrays;
 public class Enc {
 	// n is the block size, m is R's size
 	// These should probably be project-global somewhere
-	public static int n = 32;
-	public static int m = 20;
+	static int n = 32;
+	static int m = 20;
 
-	public static byte[][] toBlocks(String plaintext)
+	static byte[][] toBlocks(String plaintext)
 	{
 		String[] strArray = plaintext.split("\\s+");
 		int remainder;
@@ -30,14 +30,14 @@ public class Enc {
 		return wordArray;
 	}
 	
-	public static byte[] preEnc(byte[][] wordArray, int blockIndex, byte[] key2)
+	static byte[] preEnc(byte[][] wordArray, int blockIndex, byte[] key2)
 	{	
 		byte[] word = wordArray[blockIndex];
 		//encrypt Word with E(key2)
 		return TwoBlockEncrypt.encrypt(word, key2);
 	}
 	
-	public static byte[] getPubkey(byte[] X, byte[] key1)
+	static byte[] getPubkey(byte[] X, byte[] key1)
 	{
 		// pass first n-m bytes of X to L
 		byte[] L = new byte[n-m];
@@ -49,15 +49,15 @@ public class Enc {
 		return ki;
 	}
 
-	public static byte[] getLeft(byte[] in) {
+	static byte[] getLeft(byte[] in) {
 		return Arrays.copyOfRange(in,0,n-m);
 	}
 
-	public static byte[] getRight(byte[] in) {
+	static byte[] getRight(byte[] in) {
 		return Arrays.copyOfRange(in,n-m,n);
 	}
 	
-	public static byte[] getT(byte[] Si, byte[] key){
+	static byte[] getT(byte[] Si, byte[] key){
 		byte[] FkeySi = PRF.PRF(Si, key);
 		byte[] Ti = new byte[n];
 		// Ti = <Si, Fkey(si)>
@@ -67,7 +67,7 @@ public class Enc {
 		return Ti;
 	}
 	
-	public static byte[] xor(byte[]Xi, byte[]Ti){
+	static byte[] xor(byte[]Xi, byte[]Ti){
 		byte[] Ci = new byte[Xi.length];
 		for(int k = 0; k < Xi.length; k++) {
 			Ci[k] = (byte) (Xi[k] ^Ti[k]);
