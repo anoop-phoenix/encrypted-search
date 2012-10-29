@@ -127,7 +127,7 @@ class Server {
 	if (block1.length == block2.length) {
 	    Enc enc = new Enc();
 	    byte[] key1 = "this can be any size we want".getBytes();
-	    byte[] Ci = Enc.getC(block1, block2);
+	    byte[] Ci = Enc.xor(block1, block2);
 	    byte[] pubk = Enc.getPubkey(block2, key1);
 	
 	    System.out.println(bytesToIntStr(block1) + "\n" + bytesToIntStr(block2) + "\n" + bytesToIntStr(Enc.getT(Enc.getNM(Ci), pubk)) + "\n" + bytesToIntStr(Ci) + "\n");

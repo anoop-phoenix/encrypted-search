@@ -262,7 +262,7 @@ class ClientGUI extends JFrame implements ActionListener{
 	for (int i = 0; i < preWordArray.length; i++) {
 	    byte [] Xi = enc.preEnc(preWordArray, i, key2);
 	    if (flag != SEARCH_FLAG) {
-		wordArray[i] = enc.getC(Xi, enc.getT(stream.getChunk(), enc.getPubkey(Xi, key1)));
+		wordArray[i] = enc.xor(Xi, enc.getT(stream.getChunk(), enc.getPubkey(Xi, key1)));
 	    } else {
 		wordArray[i] = Xi;
 	    }
