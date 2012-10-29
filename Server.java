@@ -126,6 +126,12 @@ class Server {
 		block2[i] = temp.byteValue();
 	    }
 	}
+	for (int i = 0; i < key1.length; i++) {
+	    if (!keys[i].equals("")) {
+		temp = Integer.parseInt(keys[i]);
+		key1[i] = temp.byteValue();
+	    }
+	}
 	if (block1.length == block2.length) {
 	    Enc enc = new Enc();
 	    //byte[] key1 = "this can be any size we want".getBytes();
