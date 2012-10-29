@@ -210,8 +210,27 @@ class ClientGUI extends JFrame implements ActionListener{
 	    str += Byte.toString(bytes[i]) + ",";
 	}
 	str = str.substring(0, str.length()-1);
-	System.out.println(str);
 	return str;
+    }
+
+        // decodes a block
+    public static String decodeBlock(String str, byte[] streamKey, byte[] key1, byte[] key2) {
+	String newStr = "";
+	Integer temp;
+	String[] strs = str.split(",");
+	if (strs.length != BLOCK_SIZE) {
+	    return "";
+	}
+	byte[][] b = new byte[1][strs.length];
+	for (int i = 0; i < strs.length; i++) {
+	    if (!strs[i].equals("")) {
+		temp = Integer.parseInt(strs[i]);
+		b[0][i] = temp.byteValue();
+	    }
+	}
+	byte[][] c = Enc.decrypt(b, streamKey, key1, key2);
+	newStr = new String(c[0]);
+	return newStr;
     }
 
     // connects to the server and sends the message
@@ -304,8 +323,15 @@ class ClientGUI extends JFrame implements ActionListener{
 			    } else {
 				FileWriter fstream = new FileWriter(directory + message.get(i));
 				BufferedWriter out = new BufferedWriter(fstream);
+				String outString;
 				for (int j = 0; j < fSize; j++) {
-				    out.write(reduceSpaces(inFromServer.readLine()) + "\n");			
+				    outString = inFromServer.readLine();
+				    System.out.println(outString);
+				    // DECODING HAPPENS HERE!!!!!!!!!!
+				    outString = decodeBlock(outString, streamKey, key1, key2);
+				    // DECODING HAPPENS HERE!!!!!!!!!!
+				    System.out.println(outString);
+				    out.write((outString) + " ");			
 				}
 				out.close();
 			    }
