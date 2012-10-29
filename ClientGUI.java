@@ -278,7 +278,10 @@ class ClientGUI extends JFrame implements ActionListener{
 	outToServer.writeChars(blockInt(flag));
 	outToServer.writeChars(blockInt(wordArray.length));
 	for (int i = 0; i < wordArray.length; i++) {
-	    outToServer.writeBytes(bytesToIntStr(wordArray[i]) + "\n");//(wordArray[i],0,wordArray[i].length);
+	    outToServer.writeBytes(bytesToIntStr(wordArray[i]) + "\n");
+	}
+	if (flag == SEARCH_FLAG) {
+		outToServer.writeBytes(bytesToIntStr(key1) + "\n")// sending key1
 	}
 	modifiedSentence = inFromServer.readLine();
 
