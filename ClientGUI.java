@@ -268,6 +268,7 @@ class ClientGUI extends JFrame implements ActionListener{
 	    //System.out.print(new String(wordArray[i]));
 	}
 
+        // is this just writing over the first block of ciphertext?
 	if (flag == FILE_FLAG) {
 	    for (int i = 0; i < wordArray[0].length; i++) {
 		wordArray[0][i] = preWordArray[0][i];
@@ -335,7 +336,10 @@ class ClientGUI extends JFrame implements ActionListener{
 				    // DECODING HAPPENS HERE!!!!!!!!!!
 				}
                                 byte[][] decrypted = Enc.decrypt(blocks, streamKey, key1, key2);
-                                for (int j = 0; j < decrypted.length; j++) {
+                                // start at 1 to avoid the garbage from attempting to decrypt cleartext filename
+                                // also go to length-1 to avoid a similar block at the end.
+                                // I'm not sure where that one comes from, though...
+                                for (int j = 1; j < decrypted.length-1; j++) {
 				    out.write(reduceSpaces(new String(decrypted[j])));
                                 }
 				out.close();
