@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
+import java.text.*;
 
 /** 
     Client for CSE 667 Project 2
@@ -18,6 +19,7 @@ class ClientGUI extends JFrame implements ActionListener{
     static int FILE_FLAG = 1;
     static int ERROR_FLAG = -1;
     static String CONFIG_FILE = "client.config";
+    static int BLOCK_SIZE = 32;
  
     String host;
     int sock;
@@ -131,6 +133,7 @@ class ClientGUI extends JFrame implements ActionListener{
 	    } catch (Exception e) {
 		System.err.println("Execption: " + e.getMessage());
 		JOptionPane.showMessageDialog(null, e.getMessage(), "Connection Error", JOptionPane.ERROR_MESSAGE);
+		//e.printStackTrace();
 	    }
 	     setVisible(true);
 	}
@@ -150,9 +153,71 @@ class ClientGUI extends JFrame implements ActionListener{
 	}
     }
 
+    // converts Bytes to string
+    public String bytesToString(byte[][] wordArray) {
+	String str = "";
+	for (int i = 0; i < wordArray.length; i++) {
+	    str += new String(wordArray[i]);
+	    System.out.println(new String(wordArray[i]));
+	}
+	return str;
+    }
+
+   // delete leading zeros
+    public static String dezero(String str) {
+	String newString = str.substring(1, str.length());
+	while (newString.indexOf('0') == 0 && newString.length() > 1) {
+	    newString = newString.substring(2);
+	}
+	return newString;
+    }
+
+    // converts Int to padded int string
+    public String blockInt(int value) {
+	DecimalFormat myFormatter = new DecimalFormat("00000000000000000000000000000000");
+	return myFormatter.format(value);
+    }
+
+    // reduces spaces of length > 1 to length 1
+    public String reduceSpaces(String str) {
+	String newStr = str;
+	for (int i = 0; i < newStr.length() - 1; i++) {
+	    if (newStr.charAt(i) == ' ' && newStr.charAt(i+1) == ' ') {
+		newStr = newStr.substring(0, i) + newStr.substring(i + 1);
+		i--;
+	    }
+	}
+	return newStr;
+    }
+
+    // counts the number of given chars in a string
+    public static int count(String str, char c) {
+	int count = 0;
+
+	for (int i = 0; i < str.length(); i++) {
+	    if (str.charAt(i) == c) {
+		count++;
+	    }
+	}
+	
+	return count;
+    }
+
+    // byte array to string of ints seperated by commas
+    public static String bytesToIntStr(byte[] bytes) {
+	String str = "";
+	for (int i = 0; i < bytes.length; i++) {
+	    str += Byte.toString(bytes[i]) + ",";
+	}
+	str = str.substring(0, str.length()-1);
+	System.out.println(str);
+	return str;
+    }
+
     // connects to the server and sends the message
     public void connect(String host, int sock, ArrayList<String> message, int flag) throws Exception {
 
+	Enc enc = new Enc();
 	String sentence;
 	String modifiedSentence;
 	int size;
@@ -161,12 +226,41 @@ class ClientGUI extends JFrame implements ActionListener{
 	DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 	BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-	sentence = flag + "\n" + message.size() + "\n";
+	sentence = ""; //flag + " \n " + message.size() + " \n ";
 	for (int i = 0; i < message.size(); i++) {
 	    sentence += message.get(i) + "\n";
 	}
 
-	outToServer.writeBytes(sentence);
+	byte[][] preWordArray = enc.toBlocks(sentence);
+	byte[][] wordArray = new byte[preWordArray.length][BLOCK_SIZE];
+
+	byte[] key1 = "this can be any size we want".getBytes();
+	byte[] key2 = "16 chars exactly".getBytes();
+	byte[] streamKey = "This one is twenty-four!".getBytes();
+
+	StreamChunker stream = new StreamChunker(streamKey);
+
+	for (int i = 0; i < preWordArray.length; i++) {
+	    byte [] Xi = enc.preEnc(preWordArray, i, key2);
+	    if (flag != SEARCH_FLAG) {
+		wordArray[i] = enc.getC(Xi, enc.getT(stream.getChunk(), enc.getPubkey(Xi, key1)));
+	    } else {
+		wordArray[i] = Xi;
+	    }
+	    //System.out.print(new String(wordArray[i]));
+	}
+
+	if (flag == FILE_FLAG) {
+	    for (int i = 0; i < wordArray[0].length; i++) {
+		wordArray[0][i] = preWordArray[0][i];
+	    }
+	}
+
+	outToServer.writeChars(blockInt(flag));
+	outToServer.writeChars(blockInt(wordArray.length));
+	for (int i = 0; i < wordArray.length; i++) {
+	    outToServer.writeBytes(bytesToIntStr(wordArray[i]) + "\n");//(wordArray[i],0,wordArray[i].length);
+	}
 	modifiedSentence = inFromServer.readLine();
 
 	// if File message
@@ -199,7 +293,7 @@ class ClientGUI extends JFrame implements ActionListener{
 		Object[] options = {"Download", "Cancel"};
 		int n = JOptionPane.showOptionDialog(frame, size + " files with matches:" + sentence + "\nDownload files?", "Server Message", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		if (n == JOptionPane.YES_OPTION) {
-		    outToServer.writeBytes(FILE_FLAG + "\n" + size + sentence + "\n");
+		    outToServer.writeBytes(FILE_FLAG + "\n" + message.size() + sentence + "\n");
 		    try {
 			int fSize;
 			// download files
@@ -211,7 +305,7 @@ class ClientGUI extends JFrame implements ActionListener{
 				FileWriter fstream = new FileWriter(directory + message.get(i));
 				BufferedWriter out = new BufferedWriter(fstream);
 				for (int j = 0; j < fSize; j++) {
-				    out.write(inFromServer.readLine() + "\n");			
+				    out.write(reduceSpaces(inFromServer.readLine()) + "\n");			
 				}
 				out.close();
 			    }

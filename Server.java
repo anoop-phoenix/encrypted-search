@@ -15,6 +15,8 @@ class Server {
     static int FILE_FLAG = 1;
     static int ERROR_FLAG = -1;
     static String CONFIG_FILE = "server.config";
+    static int BLOCK_SIZE = 32;
+    static int BYTES_IN_CHAR = 2;
 
     // Search handles searches of "searchString" and outputs a string
     public static String Search(String searchString, String directory) {
@@ -37,8 +39,9 @@ class Server {
 		    DataInputStream in = new DataInputStream(fstream);
 		    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		    String strLine;
-		    while ((strLine = br.readLine()) != null) {
-			if (strLine.equals(searchString)) {
+		    while (br.ready()) {
+			strLine = br.readLine();
+			if (compare(strLine, searchString)) {
 			    // store only file name, not path
 			    strLine = listOfFiles[i].toString();
 			    if (strLine.indexOf("\\") >= 0) {
@@ -64,23 +67,24 @@ class Server {
 
 	} catch (Exception e) {
 	    System.err.println("Execption: " + e.getMessage());
+	    e.printStackTrace();
 	    return SEARCH_FLAG + "\n" + ERROR_FLAG + "\n";
 	}
     }
 
     // WriteFile  handles the writing of files passed from a client to a directory
     public static String WriteFile(String fileString, String directory) {
+	System.out.println(fileString);
 	String filename, fileNextLine;
 	fileString += "\n";
 	filename = fileString.substring(0, fileString.indexOf("\n"));
-	fileString = fileString.substring(fileString.indexOf("\n")+1);
+	filename = decodeBlock(filename);
+	filename = filename.substring(0, filename.indexOf(" "));
+	fileString = fileString.substring(BLOCK_SIZE);
 	try { 
 	    FileWriter fstream = new FileWriter(directory + filename);
 	    BufferedWriter out = new BufferedWriter(fstream);
-	    while (fileString.length() > 1) {
-		out.write(fileString.substring(0, fileString.indexOf("\n")) + "\n");
-		fileString = fileString.substring(fileString.indexOf("\n")+1);
-	    }
+	    out.write(fileString);
 	    out.close();
 	    
 	    return FILE_FLAG + "\n" + FILE_FLAG + "\n";
@@ -89,6 +93,128 @@ class Server {
 	    return FILE_FLAG+ "\n" + ERROR_FLAG + "\n";
 	}
     }
+
+    // byte array to string of ints seperated by commas
+    public static String bytesToIntStr(byte[] bytes) {
+	String str = "";
+	for (int i = 0; i < bytes.length; i++) {
+	    str += Byte.toString(bytes[i]) + ",";
+	}
+	str = str.substring(0, str.length()-1);
+	System.out.println(str);
+	return str;
+    }
+
+    // compares blocks for searches
+    public static boolean compare(String str1, String str2) {
+	Integer temp;
+	String[] strs1 = str1.split(",");
+	byte[] block1 = new byte[strs1.length];
+	String[] strs2 = str2.split(",");
+	byte[] block2 = new byte[strs2.length];
+	for (int i = 0; i < block1.length; i++) {
+	    if (!strs1[i].equals("")) {
+		temp = Integer.parseInt(strs1[i]);
+		block1[i] = temp.byteValue();
+	    }
+	}
+	for (int i = 0; i < block2.length; i++) {
+	    if (!strs2[i].equals("")) {
+		temp = Integer.parseInt(strs2[i]);
+		block2[i] = temp.byteValue();
+	    }
+	}
+	if (block1.length == block2.length) {
+	    Enc enc = new Enc();
+	    byte[] key1 = "this can be any size we want".getBytes();
+	    byte[] Ci = Enc.getC(block1, block2);
+	    byte[] pubk = Enc.getPubkey(block2, key1);
+	
+	    System.out.println(bytesToIntStr(block1) + "\n" + bytesToIntStr(block2) + "\n" + bytesToIntStr(Enc.getT(Enc.getNM(Ci), pubk)) + "\n" + bytesToIntStr(Ci) + "\n");
+	    return (bytesToIntStr(Enc.getT(Enc.getNM(Ci), pubk)).equals(bytesToIntStr(Ci)));
+	} else {
+	    return false;
+	}
+    }
+
+
+    // decodes a block
+    public static String decodeBlock(String str) {
+	String newStr = "";
+	Integer temp;
+	byte[] b = new byte[1];
+	String[] strs = str.split(",");
+	for (int i = 0; i < strs.length; i++) {
+	    if (!strs[i].equals("")) {
+		temp = Integer.parseInt(strs[i]);
+		b[0] = temp.byteValue();
+		newStr += new String(b);
+	    }
+	}
+	System.out.println(newStr);
+	return newStr;
+    }
+
+    // reads in a block
+    public static String readBlock(BufferedReader br) throws Exception{
+	char[] buffer = new char[BLOCK_SIZE];
+	int value;
+	for (int i = 0; i < BLOCK_SIZE; i++) {
+	    br.read();
+	    value = br.read();
+	    buffer[i] = Character.toChars(value)[0];
+	}
+	System.out.println(String.copyValueOf(buffer));
+	return String.copyValueOf(buffer);
+    }
+
+    // reads in a block
+    public static String readBlock(BufferedInputStream is, int offset) throws Exception{
+	byte[] buffer = new byte[BLOCK_SIZE*2];
+	int value;
+	is.read(buffer, offset*BLOCK_SIZE*2, buffer.length);
+	for (int i = 0; i < buffer.length; i++) {
+	    System.out.print((buffer[i]) + ",");
+	}
+	System.out.println(new String(buffer));
+	return new String(buffer);
+    }
+
+   // reads in a block
+    public static String readBlockClean(BufferedReader br) throws Exception{
+	char[] buffer = new char[BLOCK_SIZE];
+	int value;
+	for (int i = 0; i < BLOCK_SIZE; i++) {
+	    value = br.read();
+	    buffer[i] = Character.toChars(value)[0];
+	}
+	System.out.println(String.copyValueOf(buffer));
+	return String.copyValueOf(buffer);
+    }
+
+    // delete leading zeros
+    public static String dezero(String str) {
+	String newString = str;
+
+	while (newString.indexOf('0') == 0 && newString.length() > 1) {
+	    newString = newString.substring(1);
+	}
+	return newString.trim();
+    }
+
+    // counts the number of given chars in a string
+    public static int count(String str, char c) {
+	int count = 0;
+
+	for (int i = 0; i < str.length(); i++) {
+	    if (str.charAt(i) == c) {
+		count++;
+	    }
+	}
+	
+	return count;
+    }
+
     
     // main communicates with the client
     public static void main(String argv[]) throws Exception {
@@ -111,6 +237,7 @@ class Server {
 	    directory = System.getProperty("user.dir");
 	}
 
+	Enc enc = new Enc();
 	String clientSentence;
 	String capitalizedSentence;
 	int flag;
@@ -121,19 +248,21 @@ class Server {
 	while(true) {
 	    
 	    Socket connectionSocket = welcomeSocket.accept();
-	    BufferedReader inFromClient =
-		new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+	    //InputStream is = connectionSocket.getInputStream();
+	    //BufferedInputStream bis = new BufferedInputStream(is);
+	    BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 	    DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 
-	    clientSentence = inFromClient.readLine();
+	    clientSentence = dezero(readBlock(inFromClient));
 	    flag = Integer.parseInt(clientSentence);
 
-	    clientSentence = inFromClient.readLine();
+	    clientSentence = dezero(readBlock(inFromClient));
 	    size = Integer.parseInt(clientSentence);
+	    System.out.println(flag + ", " + size);
 
 	    clientSentence = "";
 	    for (int i = 0; i < size; i++) {
-		clientSentence += inFromClient.readLine() + "\n";
+		clientSentence += inFromClient.readLine() + "\n";//readBlock(inFromClient);
 	    }
 
 	    // If client wants to search
@@ -143,13 +272,16 @@ class Server {
 		// search
 		outToClient.writeBytes(Search(clientSentence, directory));
 
+		//BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+
 		// if client wants to download found files
+		while(!inFromClient.ready()) {};
 		if (FILE_FLAG == Integer.parseInt(inFromClient.readLine())) {
 		    size = Integer.parseInt(inFromClient.readLine());
+		    System.out.println(size + "");
 		    for (int i = 0; i < size; i++) {
 			files.add(inFromClient.readLine());
 		    }
-		    System.out.println(files);
 		    
 		    // send files
 		    try {
