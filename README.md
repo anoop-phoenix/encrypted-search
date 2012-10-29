@@ -21,4 +21,4 @@ Walkthrough
 Notes
 --
 
-Words and filenames must be no longer than 32 characters, and a search on the empty string will fial.
+Words and filenames must be no longer than 32 characters, and a search on the empty string will fail.
