@@ -136,10 +136,9 @@ class Server {
 	    Enc enc = new Enc();
 	    //byte[] key1 = "this can be any size we want".getBytes();
 	    byte[] Ci = Enc.xor(block1, block2);
-	    byte[] pubk = Enc.getPubkey(block2, key1);
 	
-	    System.out.println(bytesToIntStr(block1) + "\n" + bytesToIntStr(block2) + "\n" + bytesToIntStr(Enc.getT(Enc.getNM(Ci), pubk)) + "\n" + bytesToIntStr(Ci) + "\n");
-	    return (bytesToIntStr(Enc.getT(Enc.getNM(Ci), pubk)).equals(bytesToIntStr(Ci)));
+	    System.out.println(bytesToIntStr(block1) + "\n" + bytesToIntStr(block2) + "\n" + bytesToIntStr(Enc.getT(Enc.getNM(Ci), key1)) + "\n" + bytesToIntStr(Ci) + "\n");
+	    return (bytesToIntStr(Enc.getT(Enc.getNM(Ci), key1)).equals(bytesToIntStr(Ci)));
 	} else {
 	    return false;
 	}
