@@ -336,7 +336,7 @@ class ClientGUI extends JFrame implements ActionListener{
 				}
                                 byte[][] decrypted = Enc.decrypt(blocks, streamKey, key1, key2);
                                 for (int j = 0; j < decrypted.length; j++) {
-				    out.write((new String(decrypted[j])) + " ");
+				    out.write(reduceSpaces(new String(decrypted[j])));
                                 }
 				out.close();
 			    }
