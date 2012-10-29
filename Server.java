@@ -19,7 +19,7 @@ class Server {
     static int BYTES_IN_CHAR = 2;
 
     // Search handles searches of "searchString" and outputs a string
-    public static String Search(String searchString, String directory) {
+    public static String Search(String searchString, String directory, String key) {
 
 	searchString = searchString.substring(0, searchString.indexOf("\n"));
 
@@ -41,7 +41,7 @@ class Server {
 		    String strLine;
 		    while (br.ready()) {
 			strLine = br.readLine();
-			if (compare(strLine, searchString)) {
+			if (compare(strLine, searchString, key)) {
 			    // store only file name, not path
 			    strLine = listOfFiles[i].toString();
 			    if (strLine.indexOf("\\") >= 0) {
@@ -106,12 +106,14 @@ class Server {
     }
 
     // compares blocks for searches
-    public static boolean compare(String str1, String str2) {
+    public static boolean compare(String str1, String str2, String key) {
 	Integer temp;
 	String[] strs1 = str1.split(",");
 	byte[] block1 = new byte[strs1.length];
 	String[] strs2 = str2.split(",");
 	byte[] block2 = new byte[strs2.length];
+	String[] keys = key.split(",");
+	byte[] key1 = new byte[keys.length];
 	for (int i = 0; i < block1.length; i++) {
 	    if (!strs1[i].equals("")) {
 		temp = Integer.parseInt(strs1[i]);
@@ -126,7 +128,7 @@ class Server {
 	}
 	if (block1.length == block2.length) {
 	    Enc enc = new Enc();
-	    byte[] key1 = "this can be any size we want".getBytes();
+	    //byte[] key1 = "this can be any size we want".getBytes();
 	    byte[] Ci = Enc.xor(block1, block2);
 	    byte[] pubk = Enc.getPubkey(block2, key1);
 	
@@ -270,7 +272,7 @@ class Server {
 		files.clear();
 
 		// search
-		outToClient.writeBytes(Search(clientSentence, directory));
+		outToClient.writeBytes(Search(clientSentence, directory, inFromClient.readLine()));
 
 		//BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
