@@ -214,22 +214,21 @@ class ClientGUI extends JFrame implements ActionListener{
     }
 
         // decodes a block
-    public static String decodeBlock(String str, byte[] streamKey, byte[] key1, byte[] key2) {
+    public static String decodeBlock(String str) {
 	String newStr = "";
 	Integer temp;
 	String[] strs = str.split(",");
 	if (strs.length != BLOCK_SIZE) {
 	    return "";
 	}
-	byte[][] b = new byte[1][strs.length];
+	byte[] b = new byte[strs.length];
 	for (int i = 0; i < strs.length; i++) {
 	    if (!strs[i].equals("")) {
 		temp = Integer.parseInt(strs[i]);
-		b[0][i] = temp.byteValue();
+		b[i] = temp.byteValue();
 	    }
 	}
-	byte[][] c = Enc.decrypt(b, streamKey, key1, key2);
-	newStr = new String(c[0]);
+	newStr = new String(b);
 	return newStr;
     }
 
@@ -327,15 +326,18 @@ class ClientGUI extends JFrame implements ActionListener{
 				FileWriter fstream = new FileWriter(directory + message.get(i));
 				BufferedWriter out = new BufferedWriter(fstream);
 				String outString;
+                                byte[][] blocks = new byte[fSize][];
 				for (int j = 0; j < fSize; j++) {
 				    outString = inFromServer.readLine();
-				    System.out.println(outString);
 				    // DECODING HAPPENS HERE!!!!!!!!!!
-				    outString = decodeBlock(outString, streamKey, key1, key2);
+				    outString = decodeBlock(outString);
+                                    blocks[j] = outString.getBytes();
 				    // DECODING HAPPENS HERE!!!!!!!!!!
-				    System.out.println(outString);
-				    out.write((outString) + " ");			
 				}
+                                byte[][] decrypted = Enc.decrypt(blocks, streamKey, key1, key2);
+                                for (int j = 0; j < decrypted.length; j++) {
+				    out.write((new String(decrypted[i])) + " ");			
+                                }
 				out.close();
 			    }
 			}
